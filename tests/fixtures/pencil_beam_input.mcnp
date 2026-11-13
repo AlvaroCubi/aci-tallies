@@ -1,0 +1,101 @@
+Pencil beam through void, exact geometry only in the input
+c Companion of pencil_beam.mcnp (same ray, same void world): every voxel
+c scores exactly chord_length / voxel_volume. Here the meshes are what the
+c meshtal header can't describe: TR= placements (TRn cosines, *TRn degrees
+c with m=-1, a 6-value TRn), unround origins and axes, bins finer than the
+c 0.01 cm the header prints, and unround energy/time bins. Only the FMESH
+c cards of this input give their geometry exactly; see
+c crates/meshtal-core/tests/pencil_beam_input.rs.
+c Regenerate with: mcnp6 i=pencil_beam_input.mcnp n=pbi.
+1 0 -1 imp:n=1
+2 0  1 imp:n=0
+
+1 SO 200
+
+MODE N
+SDEF POS=-56.3597402157 -26.9768830971 -30.9828571187
+     VEC=0.8151391459 0.3668126157 0.4483265303 DIR=1 ERG=14 TME=0
+NPS 100
+PRDMP 2j 1
+TR1 2.71828 -1.41421 1.73205
+     0.813018687901 0.511291847175 -0.278534127417 -0.453759135760 0.856168221462 0.247140897612
+     0.364833194540 -0.074542763367 0.928084110731
+*TR2 3.250000000000 -1.750000000000 2.500000000000
+     29.541623354159 90.777530758189 119.529323566850 113.730627233425 56.082934043478 136.529888204004
+     73.449201820497 33.928457823950 61.315188914591 -1
+TR3 -1.5 0.75 -2.25 -0.488249582426 -0.849160427513 -0.201342776393
+     0.670570477622 -0.217388158425 -0.709279650856
+TR4 1.1 -0.7 0.4
+     0.813018687901 0.511291847175 -0.278534127417 -0.453759135760 0.856168221462 0.247140897612
+     -0.364833194540 0.074542763367 -0.928084110731
+TR5 0.5 -0.25 1 0.48 0.6 0.64
+TR6 -0.3 0.2 0.1 0.81 0.51 -0.28 -0.45 0.86 0.25 0.36 -0.07 0.93
+FC2004 rect, TR1 (cosines), sub-0.01 cm bins, shortcuts, out=cf
+FMESH2004:N ORIGIN -12.3456 -11.1111 -13.0707
+        IMESH -3.001 -3 2I 12.777 IINTS 1 1 2R 5
+        JMESH 0.0042 13.3333 JINTS 2 3
+        KMESH -5.5555 14.1414 KINTS 2 3
+        TR=1 OUT=CF
+FC2014 rect, *TR2 (degrees, m=-1), out=ik
+FMESH2014:N ORIGIN -12.3456 -11.1111 -13.0707
+        IMESH -3.001 -3 12.777 IINTS 1 1 5
+        JMESH 0.0042 13.3333 JINTS 2 3
+        KMESH -5.5555 14.1414 KINTS 2 3
+        TR 2 OUT=IK
+FC2024 rect, TR3 (two columns given), col
+FMESH2024:N ORIGIN -12.3456 -11.1111 -13.0707
+        IMESH -3.001 -3 12.777 IINTS 1 1 5
+        JMESH 0.0042 13.3333 JINTS 2 3
+        KMESH -5.5555 14.1414 KINTS 2 3
+        TR=3
+FC2034 cyl, TR1, unround origin/AXS/VEC, out=cf
+FMESH2034:N GEOM=CYL ORIGIN 1.23456 -0.67891 -12.34567
+        AXS 0.61234 0.01234 0.79012 VEC 1.41421 0.11111 0.22222
+        IMESH 2.0005 6.54321 14.4444 IINTS 2 3 2
+        JMESH 7.0707 26.2626 JINTS 2 5
+        KMESH 0.1234 0.35791 1 KINTS 1 2 2
+        TR=1 OUT=CF
+FC2044 cyl, unround, no TR, out=jk
+FMESH2044:N GEOM=RZT ORIGIN 1.23456 -0.67891 -12.34567
+        AXS 0.61234 0.01234 0.79012 VEC 1.41421 0.11111 0.22222
+        IMESH 2.0005 6.54321 14.4444 IINTS 2 3 2
+        JMESH 7.0707 26.2626 JINTS 2 5
+        KMESH 0.1234 0.35791 1 KINTS 1 2 2
+        OUT=JK
+FC2054 rect, TR3, unround EMESH/TMESH with fine bins, out=ij
+FMESH2054:N ORIGIN -12.3456 -11.1111 -13.0707
+        IMESH 12.777 IINTS 3
+        JMESH 13.3333 JINTS 2
+        KMESH 14.1414 KINTS 3
+        EMESH 1.23456 13.98765 20.2468 EINTS 2 3 1
+        TMESH 0.123456 7.7777 TINTS 1 2
+        TR=3 OUT=IJ
+FC2064 energy-weighted *FMESH, cyl with *TR2
+*FMESH2064:N GEOM=CYL ORIGIN -1.11 2.22 -15.55
+        IMESH 13.131 IINTS 3 JMESH 30.303 JINTS 3 KMESH 1 KINTS 4
+        TR=2
+FC2074 rect, TR4 (a reflection)
+FMESH2074:N ORIGIN -12.3456 -11.1111 -13.0707
+        IMESH -3.001 -3 12.777 IINTS 1 1 5
+        JMESH 0.0042 13.3333 JINTS 2 3
+        KMESH -5.5555 14.1414 KINTS 2 3
+        TR=4
+FC2084 rect, TR5 (one vector: MCNP completes the frame)
+FMESH2084:N ORIGIN -12.3456 -11.1111 -13.0707
+        IMESH -3.001 -3 12.777 IINTS 1 1 5
+        JMESH 0.0042 13.3333 JINTS 2 3
+        KMESH -5.5555 14.1414 KINTS 2 3
+        TR=5
+FC2094 rect, TR6 (cosines to two decimals, renormalized)
+FMESH2094:N ORIGIN -12.3456 -11.1111 -13.0707
+        IMESH -3.001 -3 12.777 IINTS 1 1 5
+        JMESH 0.0042 13.3333 JINTS 2 3
+        KMESH -5.5555 14.1414 KINTS 2 3
+        TR=6
+FC2104 cyl, TR4: a mirrored cylinder, which aci_mesh can't describe
+FMESH2104:N GEOM=CYL ORIGIN 1.23456 -0.67891 -12.34567
+        AXS 0.61234 0.01234 0.79012 VEC 1.41421 0.11111 0.22222
+        IMESH 2.0005 6.54321 14.4444 IINTS 2 3 2
+        JMESH 7.0707 26.2626 JINTS 2 5
+        KMESH 0.1234 0.35791 1 KINTS 1 2 2
+        TR=4

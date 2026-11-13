@@ -1,0 +1,23 @@
+[package]
+name = "aci-tallies-geom"
+description = "Geometry of MCNP-style structured meshes (rectangular and cylindrical): voxel indexing, volumes, point location and VTK export"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "aci_tallies_geom"
+
+[features]
+default = ["vtk"]
+# VTK XML export (`aci_tallies_geom::vtk`); pulls in flate2 for compression.
+vtk = ["dep:flate2"]
+# Exact mesh definitions from an MCNP input (`aci_tallies_geom::mcnp_input`).
+mcnp-input = ["dep:migjorn"]
+
+[dependencies]
+flate2 = { version = "1", default-features = false, features = ["rust_backend"], optional = true }
+migjorn = { version = "0.4.0", optional = true }
+
+[dev-dependencies]
+approx = "0.5"

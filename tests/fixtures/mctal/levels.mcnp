@@ -1,0 +1,64 @@
+MCTAL probe: how multi-level tally bins expand
+c Slab 3 (x 0..20, y -10..10) is filled with a 2 x 2 lattice of 10 cm
+c elements (indices 0:1 in x and y; one more around, only so that a ray on
+c an element boundary finds one), each holding box 8 in cell 9. The values
+c are not the point (one ray along +x through y = 0.3); the bins MCNP makes
+c are: the output file names them, MCTAL counts them. (A union of whole
+c chains, ((8 < 7[0 0 0] < 3) (9 < 3)), is a fatal error.)
+c Regenerate with: mcnp6 i=levels.mcnp n=levels.
+1 0  10 -11 15 -16 17 -18 imp:n=1
+2 0  11 -12 15 -16 17 -18 imp:n=1
+3 0  12 -13 15 -16 17 -18 imp:n=1 fill=1
+4 0  13 -14 15 -16 17 -18 imp:n=1
+5 0  -99 #1 #2 #3 #4 imp:n=1
+6 0  99 imp:n=0
+7 0  -22 21 -24 23 -26 25 imp:n=1 u=1 lat=1 fill=-1:2 -1:2 0:0 2 15r
+8 0  30 -31 32 -33 34 -35 imp:n=1 u=2
+9 0  #8 imp:n=1 u=2
+
+10 PX -40
+11 PX -20
+12 PX 0
+13 PX 20
+14 PX 40
+15 PY -10
+16 PY 10
+17 PZ -10
+18 PZ 10
+21 PX 0
+22 PX 10
+23 PY -10
+24 PY 0
+25 PZ -10
+26 PZ 10
+30 PX 2
+31 PX 8
+32 PY -8
+33 PY -2
+34 PZ -5
+35 PZ 5
+99 SO 200
+
+MODE N
+SDEF POS=-100 0.3 0.7 VEC=1 0 0 DIR=1 ERG=14 TME=0
+NPS 10
+PRDMP 2j 1
+VOL 8000 8000 8000 8000 1 1 2000 360 1640
+FC4 union at the first level
+F4:N ((8 9) < 3)
+FC14 a lattice element in parentheses
+F14:N (8 < (7[0:1 0:0 0:0]) < 3)
+FC24 two cells over a 2 x 2 range
+F24:N (8 9 < 7[0:1 0:1 0:0] < 3)
+FC34 a 2 x 2 range and the T bin
+F34:N (8 < 7[0:1 0:1 0:0] < 3) T
+FC44 listed elements, then another chain
+F44:N (8 < 7[0 0 0] 7[1 1 0] < 3) (9 < 3)
+FC54 the lattice cell with no index
+F54:N (8 < 7 < 3)
+FC64 the last level in parentheses
+F64:N (8 < 7[0:1 0:1 0:0] < (3))
+FC84 several first-level cells, then a single chain, then T
+F84:N (8 9 < 7[0 0 0] < 3) (8 < 7[1 0 0] < 3) T
+FC94 plain cells and a group with T
+F94:N 1 (2 4) T

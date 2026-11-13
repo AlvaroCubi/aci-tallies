@@ -1,0 +1,20 @@
+[package]
+name = "aci-tallies-py"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "_native"
+crate-type = ["cdylib"]
+# Built by maturin and tested from Python (tests/python): a Rust test binary
+# would link libpython, which isn't on the loader path outside Python.
+test = false
+doctest = false
+
+[dependencies]
+aci-tallies = { path = "../tallies" }
+aci-tallies-geom = { path = "../geom" }
+pyo3 = { version = "0.23", features = ["abi3-py310", "generate-import-lib", "multiple-pymethods"] }
+numpy = "0.23"
+ndarray = "0.16"

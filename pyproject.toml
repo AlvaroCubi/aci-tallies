@@ -1,0 +1,25 @@
+[build-system]
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "aci-tallies"
+version = "0.1.0"
+description = "Read MCNP tally files (meshtal, MCTAL), however large, into NumPy arrays"
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "EUPL-1.2" }
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+polars = ["polars>=1.0"]
+vtk = ["pyvista>=0.44"]
+xarray = ["xarray>=2023.1"]
+all = ["aci-tallies[polars,vtk,xarray]"]
+dev = ["aci-tallies[all]", "pytest", "mypy", "ruff"]
+
+[tool.maturin]
+manifest-path = "crates/py/Cargo.toml"
+python-source = "python"
+module-name = "aci_tallies._native"
+features = ["pyo3/extension-module"]

@@ -1,0 +1,19 @@
+Values below 1e-99: three-digit exponents in a meshtal file
+c One 14 MeV neutron ray along +x through void (as mctal/probe.mcnp);
+c FM1004 scales the flux by 1e-110, so MCNP prints values like
+c 2.50000-113, without the E. Regenerate with:
+c mcnp6 i=tiny_values.mcnp n=tiny_values.
+1 0  -99 imp:n=1
+2 0  99 imp:n=0
+
+99 SO 200
+
+MODE N
+SDEF POS=-100 0.3 0.7 VEC=1 0 0 DIR=1 ERG=14 TME=0
+NPS 10
+PRDMP 2j 1
+FMESH1004:N ORIGIN -40 -10 -10 IMESH 40 IINTS 4 JMESH 10 JINTS 1 KMESH 10 KINTS 1
+FM1004 1e-110
+FMESH1014:N ORIGIN -40 -10 -10 IMESH 40 IINTS 4 JMESH 10 JINTS 1 KMESH 10 KINTS 1
+     OUT=IJ
+FM1014 1e-110

@@ -1,0 +1,16 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/geom",
+    "crates/tallies",
+    "crates/py",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "EUPL-1.2"
+
+[profile.release]
+opt-level = 3
+lto = true

@@ -1,0 +1,96 @@
+Pencil beam through void: every history follows the same ray
+c Every history is the same 14 MeV neutron flying along one straight ray
+c through void, so each voxel scores exactly chord_length / voxel_volume
+c with zero variance. crates/meshtal-core/tests/pencil_beam.rs recomputes
+c those chords analytically from the parsed geometry. Bounds, origins and
+c axes are chosen to be exact at the precision MCNP prints them in the
+c meshtal header (2 decimals, 3 decimals for theta, 3 significant digits
+c for origin/AXS/VEC). Regenerate with: mcnp6 i=pencil_beam.mcnp n=pb.
+1 0 -1 imp:n=1
+2 0  1 imp:n=0
+
+1 SO 200
+
+MODE N
+SDEF POS=-56.3597402157 -26.9768830971 -30.9828571187
+     VEC=0.8151391459 0.3668126157 0.4483265303 DIR=1 ERG=14 TME=0
+NPS 100
+PRDMP 2j 1
+FC1004 rect multi-coarse non-uniform, out=cf
+FMESH1004:N ORIGIN -12 -11.5 -13
+        IMESH -3 0.5 12 IINTS 3 2 5
+        JMESH 0 13 JINTS 2 2
+        KMESH -5 -4.9 14 KINTS 1 1 3
+        OUT=CF
+FC1014 cyl tilted multi-coarse, VEC not normal to AXS, out=cf
+FMESH1014:N GEOM=CYL ORIGIN 1.23 -0.679 -12.3
+        AXS 0.6 0 0.8 VEC 1.4 0 0.2
+        IMESH 2 6.5 14 IINTS 2 3 2
+        JMESH 7 26 JINTS 2 5
+        KMESH 0.1 0.35 1 KINTS 1 2 2
+        OUT=CF
+FC1024 cyl tilted, out=ij
+FMESH1024:N GEOM=CYL ORIGIN 1.23 -0.679 -12.3
+        AXS 0.6 0 0.8 VEC 1.4 0 0.2
+        IMESH 2 6.5 14 IINTS 2 3 2
+        JMESH 7 26 JINTS 2 5
+        KMESH 0.1 0.35 1 KINTS 1 2 2
+        OUT=IJ
+FC1034 cyl tilted, out=ik
+FMESH1034:N GEOM=CYL ORIGIN 1.23 -0.679 -12.3
+        AXS 0.6 0 0.8 VEC 1.4 0 0.2
+        IMESH 2 6.5 14 IINTS 2 3 2
+        JMESH 7 26 JINTS 2 5
+        KMESH 0.1 0.35 1 KINTS 1 2 2
+        OUT=IK
+FC1044 cyl tilted, out=jk
+FMESH1044:N GEOM=CYL ORIGIN 1.23 -0.679 -12.3
+        AXS 0.6 0 0.8 VEC 1.4 0 0.2
+        IMESH 2 6.5 14 IINTS 2 3 2
+        JMESH 7 26 JINTS 2 5
+        KMESH 0.1 0.35 1 KINTS 1 2 2
+        OUT=JK
+FC1054 cyl tilted, default col output
+FMESH1054:N GEOM=CYL ORIGIN 1.23 -0.679 -12.3
+        AXS 0.6 0 0.8 VEC 1.4 0 0.2
+        IMESH 2 6.5 14 IINTS 2 3 2
+        JMESH 7 26 JINTS 2 5
+        KMESH 0.1 0.35 1 KINTS 1 2 2
+FC1064 rect emesh + tmesh, col
+FMESH1064:N ORIGIN -12 -11.5 -13
+        IMESH -3 0.5 12 IINTS 3 2 5
+        JMESH 0 13 JINTS 2 2
+        KMESH -5 -4.9 14 KINTS 1 1 3
+        EMESH 10 13.5 20
+        TMESH 1 300 1e5 TINTS 1 1 1
+FC1074 rect emesh + tmesh, out=ij
+FMESH1074:N ORIGIN -12 -11.5 -13
+        IMESH -3 0.5 12 IINTS 3 2 5
+        JMESH 0 13 JINTS 2 2
+        KMESH -5 -4.9 14 KINTS 1 1 3
+        EMESH 10 13.5 20
+        TMESH 1 300 1e5 TINTS 1 1 1
+        OUT=IJ
+FC1084 rect emesh + tmesh, out=ik
+FMESH1084:N ORIGIN -12 -11.5 -13
+        IMESH -3 0.5 12 IINTS 3 2 5
+        JMESH 0 13 JINTS 2 2
+        KMESH -5 -4.9 14 KINTS 1 1 3
+        EMESH 10 13.5 20
+        TMESH 1 300 1e5 TINTS 1 1 1
+        OUT=IK
+FC1094 rect emesh + tmesh, out=jk
+FMESH1094:N ORIGIN -12 -11.5 -13
+        IMESH -3 0.5 12 IINTS 3 2 5
+        JMESH 0 13 JINTS 2 2
+        KMESH -5 -4.9 14 KINTS 1 1 3
+        EMESH 10 13.5 20
+        TMESH 1 300 1e5 TINTS 1 1 1
+        OUT=JK
+FC1104 cyl tmesh only, out=ik
+FMESH1104:N GEOM=CYL ORIGIN 0 0 -15
+        IMESH 15 IINTS 3
+        JMESH 30 JINTS 3
+        KMESH 1 KINTS 4
+        TMESH 1 300 1e5
+        OUT=IK
