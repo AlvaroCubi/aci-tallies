@@ -4,12 +4,23 @@ build-backend = "maturin"
 
 [project]
 name = "aci-tallies"
-version = "0.1.0"
+dynamic = ["version"]  # from Cargo.toml [workspace.package]
 description = "Read MCNP tally files (meshtal, MCTAL), however large, into NumPy arrays"
 requires-python = ">=3.10"
 readme = "README.md"
 license = { text = "EUPL-1.2" }
+authors = [{ name = "Alvaro Cubi" }]
+keywords = ["mcnp", "meshtal", "mctal", "tally", "monte-carlo"]
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)",
+    "Topic :: Scientific/Engineering :: Physics",
+]
 dependencies = ["numpy>=1.24"]
+
+[project.urls]
+Repository = "https://github.com/AlvaroCubi/aci-tallies"
 
 [project.optional-dependencies]
 polars = ["polars>=1.0"]

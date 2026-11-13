@@ -212,4 +212,4 @@ slower at parsing. The fixtures under `tests/fixtures` are MCNP output; each
 
 ## License
 
-[EUPL-1.2](LICENSE).
+[EUPL-1.2](https://github.com/AlvaroCubi/aci-tallies/blob/master/LICENSE).

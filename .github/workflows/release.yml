@@ -1,0 +1,134 @@
+# Push a tag `vX.Y.Z` matching [workspace.package] version in Cargo.toml:
+# tests run, wheels are built for every platform, then the Python package
+# goes to PyPI, the crates to crates.io, and a GitHub release is made.
+# Nothing is published unless every test and build passes.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag matches Cargo.toml
+        run: |
+          version=$(sed -n '/^\[workspace.package\]/,/^\[/s/^version = "\(.*\)"/\1/p' Cargo.toml)
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$version" != "$tag" ]; then
+            echo "::error::tag v$tag but Cargo.toml says $version"; exit 1
+          fi
+          if ! grep -q "aci-tallies-geom = .*version = \"=$version\"" crates/tallies/Cargo.toml; then
+            echo "::error::crates/tallies/Cargo.toml must depend on aci-tallies-geom =$version"; exit 1
+          fi
+
+  test:
+    needs: check-version
+    uses: ./.github/workflows/ci.yml
+
+  wheels:
+    needs: check-version
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { os: ubuntu-latest, target: x86_64, manylinux: auto }
+          - { os: ubuntu-latest, target: aarch64, manylinux: auto }
+          - { os: ubuntu-latest, target: x86_64, manylinux: musllinux_1_2 }
+          - { os: ubuntu-latest, target: aarch64, manylinux: musllinux_1_2 }
+          - { os: macos-latest, target: x86_64 }   # cross-compiled on Apple Silicon
+          - { os: macos-latest, target: aarch64 }
+          - { os: windows-latest, target: x64 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux }}
+          args: --release --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-${{ matrix.target }}-${{ matrix.manylinux || 'native' }}
+          path: dist
+
+  sdist:
+    needs: check-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+  crates-dry-run:
+    needs: check-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo publish --workspace --dry-run
+
+  publish-pypi:
+    needs: [test, wheels, sdist, crates-dry-run]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # PyPI trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true  # a re-run after a partial failure is safe
+
+  publish-crates:
+    needs: [test, wheels, sdist, crates-dry-run]
+    runs-on: ubuntu-latest
+    environment: crates-io
+    permissions:
+      id-token: write  # crates.io trusted publishing
+    env:
+      # Only for the very first release: crates.io trusted publishing can be
+      # set up only for crates that already exist. Delete the secret after.
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+        if: env.CARGO_REGISTRY_TOKEN == ''
+      # Publishes aci-tallies-geom, then aci-tallies (aci-tallies-py has publish = false).
+      - run: cargo publish --workspace
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token || env.CARGO_REGISTRY_TOKEN }}
+
+  github-release:
+    needs: [publish-pypi, publish-crates]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

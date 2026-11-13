@@ -10,6 +10,10 @@ members = [
 version = "0.1.0"
 edition = "2021"
 license = "EUPL-1.2"
+authors = ["Alvaro Cubi"]
+repository = "https://github.com/AlvaroCubi/aci-tallies"
+keywords = ["mcnp", "meshtal", "mctal", "tally", "monte-carlo"]
+categories = ["parser-implementations", "science"]
 
 [profile.release]
 opt-level = 3

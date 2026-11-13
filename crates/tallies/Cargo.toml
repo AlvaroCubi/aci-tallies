@@ -1,11 +1,17 @@
 [package]
 name = "aci-tallies"
+description = "Fast, out-of-core readers for MCNP tally files: meshtal (FMESH), MCTAL and D1SUNED cell-under-voxel"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+authors.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+readme = "README.md"
 
 [dependencies]
-aci-tallies-geom = { path = "../geom", default-features = false, features = ["mcnp-input"] }
+aci-tallies-geom = { path = "../geom", version = "=0.1.0", default-features = false, features = ["mcnp-input"] }
 migjorn = "0.4.0"
 ndarray = { version = "0.16", features = ["rayon"] }
 memchr = "2"
