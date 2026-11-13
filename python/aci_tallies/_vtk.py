@@ -47,12 +47,16 @@ def _resolve(value: Indices, axis: Axis, name: str) -> list[tuple[int, str]]:
     for v in values:
         if v == "total":
             if not axis.total:
-                raise ValueError(f"{name}='total', but this tally has no {name} Total bin")
+                raise ValueError(
+                    f"{name}='total', but this tally has no {name} Total bin"
+                )
             out.append((axis.n_bins, "total"))
         elif isinstance(v, int) and 0 <= v < axis.n_bins:
             out.append((v, str(v)))
         else:
-            raise ValueError(f"{name}={v!r} is not one of the {axis.n_bins} {name} bin(s) or 'total'")
+            raise ValueError(
+                f"{name}={v!r} is not one of the {axis.n_bins} {name} bin(s) or 'total'"
+            )
     return out
 
 
@@ -64,7 +68,9 @@ def _arrays(
     an axis of more than one selected index; `volume` once."""
     energies = _resolve(energy, tally.energy, "energy")
     times = _resolve(time, tally.time, "time")
-    available = ["result", "rel_error"] + (["volume"] if tally.volume is not None else [])
+    available = ["result", "rel_error"] + (
+        ["volume"] if tally.volume is not None else []
+    )
     out = []
     for name in fields if fields is not None else available:
         if name not in available:

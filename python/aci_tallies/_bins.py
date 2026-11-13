@@ -34,7 +34,9 @@ def axis_columns(axis: Axis) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
 _FIRST_LOWER = {"e": 0.0, "c": -1.0, "t": -np.inf}
 
 
-def mctal_axis_columns(name: str, axis: Axis) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+def mctal_axis_columns(
+    name: str, axis: Axis
+) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
     """`axis_columns` for an MCTAL axis, which usually has only upper
     bounds; None when it has no bounds at all."""
     if axis.bounds is not None:

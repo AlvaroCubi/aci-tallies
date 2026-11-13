@@ -31,7 +31,9 @@ def test_to_polars_rectangular_shape_and_values(parsed):
     assert "time_is_total" not in df.columns
     # The voxel at (-8, -8, -8) should carry the same value we've verified
     # elsewhere against the raw file.
-    row = df.filter((pl.col("x") == -8.0) & (pl.col("y") == -8.0) & (pl.col("z") == -8.0))
+    row = df.filter(
+        (pl.col("x") == -8.0) & (pl.col("y") == -8.0) & (pl.col("z") == -8.0)
+    )
     assert row.height == 1
     assert row["result"][0] == pytest.approx(4.69512e-04, rel=1e-6)
 
@@ -75,7 +77,9 @@ def test_to_polars_time_bounds_and_total_rows(parsed):
     t = _tally(parsed, 94)  # energy- and time-discretized, both have a Total
     df = t.to_polars()
     assert t.energy.total and t.time.total
-    assert {"energy_is_total", "time_low", "time_high", "time_is_total"} <= set(df.columns)
+    assert {"energy_is_total", "time_low", "time_high", "time_is_total"} <= set(
+        df.columns
+    )
     assert df.height == 11 * 4 * 5 * 5 * 5
     grand_total = df.filter(pl.col("energy_is_total") & pl.col("time_is_total"))
     assert grand_total.height == 5 * 5 * 5

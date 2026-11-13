@@ -42,7 +42,9 @@ def test_tally_34_energy_discretized(parsed):
     assert t.result.shape == (11, 1, 5, 5, 5)
     assert t.result[0, 0, 0, 0, 0] == pytest.approx(7.41491e11, rel=1e-6)
     # MCNP's automatic Total energy block, first row.
-    assert t.result[t.energy.total_index, 0, 0, 0, 0] == pytest.approx(8.67991e11, rel=1e-6)
+    assert t.result[t.energy.total_index, 0, 0, 0, 0] == pytest.approx(
+        8.67991e11, rel=1e-6
+    )
 
 
 def test_tally_44_ij_matches_tally_14_col(parsed):
@@ -89,7 +91,9 @@ def test_tally_84_time_discretized(parsed):
     assert t.time.total
     assert t.result.shape == (1, 4, 5, 5, 5)
     assert t.result[0, 0, 0, 0, 0] == pytest.approx(4.69512e-04, rel=1e-6)
-    assert t.result[0, t.time.total_index, 0, 0, 0] == pytest.approx(4.69512e-04, rel=1e-6)
+    assert t.result[0, t.time.total_index, 0, 0, 0] == pytest.approx(
+        4.69512e-04, rel=1e-6
+    )
 
 
 def test_tally_94_energy_and_time_discretized(parsed):

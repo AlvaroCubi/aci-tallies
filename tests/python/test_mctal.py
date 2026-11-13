@@ -75,8 +75,18 @@ def test_tables(probe: mctal.MctalFile) -> None:
     df = probe[64].to_polars()
     assert df.height == 4 * 4 * 3
     assert df.columns == [
-        "f", "number", "e", "e_low", "e_high", "e_is_total",
-        "t", "t_low", "t_high", "t_is_total", "result", "rel_error",
+        "f",
+        "number",
+        "e",
+        "e_low",
+        "e_high",
+        "e_is_total",
+        "t",
+        "t_low",
+        "t_high",
+        "t_is_total",
+        "result",
+        "rel_error",
     ]
     row = df.filter((df["f"] == 1) & (df["e"] == 2) & (df["t"] == 0))
     assert row["number"].item() == 2 and row["result"].item() == CELL
@@ -128,16 +138,31 @@ def test_same_values_as_f4enix() -> None:
             vals = ref.valsErrors[..., 0].reshape(tuple(t.shape))
             errs = ref.valsErrors[..., 1].reshape(tuple(t.shape))
             tiny = np.abs(t.result) < 1e-99
-            assert np.array_equal(vals[~tiny], t.result[~tiny]), (path.name, ref.tallyNumber)
-            assert np.array_equal(errs[~tiny], t.rel_error[~tiny]), (path.name, ref.tallyNumber)
+            assert np.array_equal(vals[~tiny], t.result[~tiny]), (
+                path.name,
+                ref.tallyNumber,
+            )
+            assert np.array_equal(errs[~tiny], t.rel_error[~tiny]), (
+                path.name,
+                ref.tallyNumber,
+            )
 
 
 def test_bins_from_the_input() -> None:
     f = mctal.open(FIXTURES / "levels.m", input=FIXTURES / "levels.mcnp")
     t = f[84]
     assert t.bins is not None
-    assert [str(b) for b in t.bins] == ["(8<7[0 0 0]<3)", "(9<7[0 0 0]<3)", "(8<7[1 0 0]<3)", "T"]
-    assert t.bins[2].levels == [[(8, None, None)], [(7, None, [1, 0, 0])], [(3, None, None)]]
+    assert [str(b) for b in t.bins] == [
+        "(8<7[0 0 0]<3)",
+        "(9<7[0 0 0]<3)",
+        "(8<7[1 0 0]<3)",
+        "T",
+    ]
+    assert t.bins[2].levels == [
+        [(8, None, None)],
+        [(7, None, [1, 0, 0])],
+        [(3, None, None)],
+    ]
     assert t.bins[3].total and t.bins[3].levels == []
     assert t.numbers == [8, 9, 8, None]
     pytest.importorskip("polars")

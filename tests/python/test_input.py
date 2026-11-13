@@ -40,7 +40,9 @@ def test_input_geometry_replaces_the_header(exact, header_only):
         assert h.energy_weighted is None
         assert h.geometry.transform is None
         # The header is the input rounded to two decimals.
-        assert np.allclose(t.geometry.bounds[0], h.geometry.bounds[0], atol=0.0051, rtol=0)
+        assert np.allclose(
+            t.geometry.bounds[0], h.geometry.bounds[0], atol=0.0051, rtol=0
+        )
     t = exact[2004]
     assert t.geometry.kind == "rectangular"
     assert t.geometry.bounds[0][:3] == pytest.approx([-12.3456, -3.001, -3.0])
@@ -50,7 +52,9 @@ def test_input_geometry_replaces_the_header(exact, header_only):
     assert t.geometry.transform[:3, 3] == pytest.approx([2.71828, -1.41421, 1.73205])
     # A cylinder's TR= moves its frame instead.
     assert exact[2034].geometry.transform is None
-    assert exact[2034].geometry.origin != pytest.approx(header_only[2034].geometry.origin, abs=0.1)
+    assert exact[2034].geometry.origin != pytest.approx(
+        header_only[2034].geometry.origin, abs=0.1
+    )
 
 
 def test_mismatched_input_keeps_the_header_with_a_warning(header_only):
@@ -86,7 +90,9 @@ def test_transformed_mesh_is_a_structured_grid_in_the_world(exact, tmp_path):
     local = (np.linalg.inv(m.geometry.transform) @ centers.T).T[:, :3]
     ijk = [
         np.searchsorted(b, c) - 1
-        for b, c in zip((m.geometry.bounds[0], m.geometry.bounds[1], m.geometry.bounds[2]), local.T)
+        for b, c in zip(
+            (m.geometry.bounds[0], m.geometry.bounds[1], m.geometry.bounds[2]), local.T
+        )
     ]
     assert np.array_equal(mirrored.cell_data["result"], m.result[0, 0][tuple(ijk)])
 

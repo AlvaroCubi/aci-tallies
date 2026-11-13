@@ -47,7 +47,16 @@ def _row(cells: list[str]) -> str:
 
 
 def meshtal_file(f: MeshtalFile) -> str:
-    head = ["tally", "particle", "mesh", "energy bins", "time bins", "out", "comment", "warnings"]
+    head = [
+        "tally",
+        "particle",
+        "mesh",
+        "energy bins",
+        "time bins",
+        "out",
+        "comment",
+        "warnings",
+    ]
     rows = []
     for t in f.tallies:
         rows.append(
@@ -92,7 +101,9 @@ def mesh_tally(t: MeshTally) -> str:
                 f"<tr><td>rel. error</td><td>max {np.max(e[nonzero]):.4g} where scored; "
                 f"{int(nonzero.sum())} of {r.size} values scored</td></tr>"
             )
-    warnings = "".join(f"<div class='w'>{html.escape(str(w))}</div>" for w in t.warnings[:10])
+    warnings = "".join(
+        f"<div class='w'>{html.escape(str(w))}</div>" for w in t.warnings[:10]
+    )
     if len(t.warnings) > 10:
         warnings += f"<div class='w'>… {len(t.warnings) - 10} more</div>"
     rows = [
@@ -117,7 +128,11 @@ def _mctal_bins(t: MctalTally | MctalInfo) -> str:
     for name, n in zip(t.dims, t.shape):
         if n > 1:
             axis = t.axes[name]
-            extra = " incl. Total" if axis.total else (" cumulative" if axis.cumulative else "")
+            extra = (
+                " incl. Total"
+                if axis.total
+                else (" cumulative" if axis.cumulative else "")
+            )
             parts.append(f"{name}={n}{extra}")
     return ", ".join(parts) or "one value"
 
@@ -140,10 +155,14 @@ def mctal_file(f: MctalFile) -> str:
                 ]
             )
         )
-    notes = "".join(f"<div class='w'>tally {i}: {html.escape(why)}</div>" for i, why in f.failed)
+    notes = "".join(
+        f"<div class='w'>tally {i}: {html.escape(why)}</div>" for i, why in f.failed
+    )
     notes += "".join(f"<div class='w'>{html.escape(str(w))}</div>" for w in f.warnings)
     k = f.kcode
-    kcode = f" · KCODE: {k.cycles} cycles, {k.inactive} inactive" if k is not None else ""
+    kcode = (
+        f" · KCODE: {k.cycles} cycles, {k.inactive} inactive" if k is not None else ""
+    )
     pert = f" · {f.perturbations} perturbations" if f.perturbations else ""
     path = html.escape(str(f.path)) if f.path is not None else "&lt;memory&gt;"
     return (
@@ -168,7 +187,9 @@ def mctal_tally(t: MctalTally) -> str:
         rows.append(["perturbation", str(t.perturbation)])
     if r.size:
         rows.append(["result", f"min {np.nanmin(r):.4g}, max {np.nanmax(r):.4g}"])
-    warnings = "".join(f"<div class='w'>{html.escape(str(w))}</div>" for w in t.warnings[:10])
+    warnings = "".join(
+        f"<div class='w'>{html.escape(str(w))}</div>" for w in t.warnings[:10]
+    )
     return (
         f"{_STYLE}<div class='aci-t'><b>Tally {t.id}</b><table>"
         f"{''.join(_row(r) for r in rows)}</table>{warnings}</div>"
@@ -176,7 +197,15 @@ def mctal_tally(t: MctalTally) -> str:
 
 
 def cuv_file(f: CuvFile) -> str:
-    head = ["mesh", "particle", "geometry", "voxels", "energy bins", "comment", "warnings"]
+    head = [
+        "mesh",
+        "particle",
+        "geometry",
+        "voxels",
+        "energy bins",
+        "comment",
+        "warnings",
+    ]
     rows = [
         _row(
             [
@@ -218,10 +247,14 @@ def cuv_pairs(p: CuvPairs) -> str:
         scored = p.total > 0
         rows.append(["scored", f"{int(scored.sum())} of {len(p)} pairs"])
     if p.material is not None:
-        rows.append(["materials", ", ".join(str(m) for m in np.unique(p.material)[:20])])
+        rows.append(
+            ["materials", ", ".join(str(m) for m in np.unique(p.material)[:20])]
+        )
     if p.geometry_from_input:
         rows.append(["geometry", "from the MCNP input"])
-    warnings = "".join(f"<div class='w'>{html.escape(str(w))}</div>" for w in p.warnings[:10])
+    warnings = "".join(
+        f"<div class='w'>{html.escape(str(w))}</div>" for w in p.warnings[:10]
+    )
     return (
         f"{_STYLE}<div class='aci-t'><b>CuvPairs {p.id}</b><table>"
         f"{''.join(_row(r) for r in rows)}</table>{warnings}</div>"

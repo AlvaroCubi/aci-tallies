@@ -80,8 +80,17 @@ def test_tables(tmp_path):
     p = cuv.open_mesh(CUVMSH, MESHINFO)[14]
     df = p.to_polars()
     assert df.columns == [
-        "voxel", "x", "y", "z", "cell", "fraction", "volume",
-        "material", "density", "total", "total_error",
+        "voxel",
+        "x",
+        "y",
+        "z",
+        "cell",
+        "fraction",
+        "volume",
+        "material",
+        "density",
+        "total",
+        "total_error",
     ]
     assert df.height == 32 and df["z"][1] == 10.0
     long = p.to_polars(spectra=True)

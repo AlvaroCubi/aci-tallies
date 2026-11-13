@@ -88,7 +88,9 @@ def mctal_frame(tally: MctalTally) -> Any:
             columns["number"] = numbers.gather(columns["f"])
         if name == "f" and tally.bins is not None:
             # Categorical: one index per row, each label stored once.
-            labels = pl.Series("bin", [str(b) for b in tally.bins], dtype=pl.Categorical)
+            labels = pl.Series(
+                "bin", [str(b) for b in tally.bins], dtype=pl.Categorical
+            )
             columns["bin"] = labels.gather(columns["f"])
     columns["result"] = tally.result.reshape(-1)
     columns["rel_error"] = tally.rel_error.reshape(-1)
@@ -136,5 +138,7 @@ def cuv_frame(pairs: CuvPairs, spectra: bool = False) -> Any:
     return pl.DataFrame(columns)
 
 
-def cuv_parquet(pairs: CuvPairs, path: str | os.PathLike[str], spectra: bool = False) -> None:
+def cuv_parquet(
+    pairs: CuvPairs, path: str | os.PathLike[str], spectra: bool = False
+) -> None:
     cuv_frame(pairs, spectra).write_parquet(os.fspath(path))

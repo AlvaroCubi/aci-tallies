@@ -48,7 +48,11 @@ def test_bins_read_alone_are_slices_of_the_whole(f: meshtal.MeshtalFile) -> None
             for time in (1, "total", None):
                 part = f.read(tally_id, energy=energy, time=time)
                 e = _index(energy, whole.energy)
-                t = slice(None) if time is None else slice(_index(time, whole.time), _index(time, whole.time) + 1)
+                t = (
+                    slice(None)
+                    if time is None
+                    else slice(_index(time, whole.time), _index(time, whole.time) + 1)
+                )
                 want = whole.result[e : e + 1, t]
                 assert np.array_equal(part.result, want), (tally_id, energy, time)
                 assert np.array_equal(part.rel_error, whole.rel_error[e : e + 1, t])
@@ -91,7 +95,10 @@ def test_isel_takes_ints_slices_and_total(f: meshtal.MeshtalFile) -> None:
 def test_input_is_reused_and_formats_detected() -> None:
     inp = aci_tallies.Input(FIXTURES / "pencil_beam_input.mcnp")
     a = meshtal.open(FIXTURES / "pencil_beam_input.msht", input=inp)
-    b = meshtal.open(FIXTURES / "pencil_beam_input.msht", input=str(FIXTURES / "pencil_beam_input.mcnp"))
+    b = meshtal.open(
+        FIXTURES / "pencil_beam_input.msht",
+        input=str(FIXTURES / "pencil_beam_input.mcnp"),
+    )
     assert a.info(2004).geometry == b.info(2004).geometry
     assert a.info(2004).geometry_from_input
     assert aci_tallies.detect(PENCIL) == "meshtal"
@@ -116,7 +123,9 @@ def test_geometry(f: meshtal.MeshtalFile) -> None:
     assert cyl.origin is not None and cyl.transform is None
 
 
-def test_arithmetic_returns_not_implemented_for_strangers(f: meshtal.MeshtalFile) -> None:
+def test_arithmetic_returns_not_implemented_for_strangers(
+    f: meshtal.MeshtalFile,
+) -> None:
     t = f[1054]
     with pytest.raises(TypeError):
         t + 1.0  # type: ignore[operator]

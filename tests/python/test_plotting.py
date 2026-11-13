@@ -69,7 +69,9 @@ def test_cylindrical_grid_points_lie_on_bin_boundaries(parsed):
     assert np.allclose(z_local, z_bounds[:, None, None], atol=1e-9)
     assert np.allclose(r_local, r_bounds[None, None, :], atol=1e-9)
     on_axis = np.broadcast_to(r_bounds[None, None, :] < 1e-9, theta_local.shape)
-    expected = np.broadcast_to(np.mod(theta_bounds, 1.0)[None, :, None], theta_local.shape)
+    expected = np.broadcast_to(
+        np.mod(theta_bounds, 1.0)[None, :, None], theta_local.shape
+    )
     diff = np.abs(theta_local[~on_axis] - expected[~on_axis])
     assert np.all(np.minimum(diff, 1.0 - diff) < 1e-9)
 
@@ -87,7 +89,9 @@ def test_cylindrical_grid_value_at_known_world_point(parsed):
     # Th=[0.0, 0.1] rev — pick a world point safely inside it and confirm
     # the grid cell containing that point carries the expected result.
     theta_rad = 0.05 * 2 * np.pi
-    point_inside = np.array([0.0, 0.0, -9.0]) + 0.5 * np.array([np.cos(theta_rad), np.sin(theta_rad), 0.0])
+    point_inside = np.array([0.0, 0.0, -9.0]) + 0.5 * np.array(
+        [np.cos(theta_rad), np.sin(theta_rad), 0.0]
+    )
 
     cell_id = grid.find_containing_cell(point_inside)
     assert cell_id != -1, "expected point to fall inside the cylindrical grid"
@@ -96,16 +100,24 @@ def test_cylindrical_grid_value_at_known_world_point(parsed):
     # Subdivision only repeats values, and 5-degree flat-faced sub-cells
     # approximate the true annular sectors to sin(x)/x ~ 0.9987, so the
     # volume integral matches the exact one closely.
-    r, z, th = (np.asarray(b) for b in (t.geometry.bounds[0], t.geometry.bounds[1], t.geometry.bounds[2]))
+    r, z, th = (
+        np.asarray(b)
+        for b in (t.geometry.bounds[0], t.geometry.bounds[1], t.geometry.bounds[2])
+    )
     exact_volume = (
-        np.pi * np.diff(r**2)[:, None, None] * np.diff(z)[None, :, None] * np.diff(th)[None, None, :]
+        np.pi
+        * np.diff(r**2)[:, None, None]
+        * np.diff(z)[None, :, None]
+        * np.diff(th)[None, None, :]
     )
     exact_sum = np.sum(t.result[0, 0] * exact_volume)
     grid_sum = np.sum(grid.cell_data["result"] * grid.compute_cell_sizes()["Volume"])
     assert grid_sum == pytest.approx(exact_sum, rel=2e-3)
 
 
-@pytest.mark.parametrize(("tally_id", "suffix"), [(14, "vtr"), (34, "vtr"), (64, "vtr"), (74, "vts")])
+@pytest.mark.parametrize(
+    ("tally_id", "suffix"), [(14, "vtr"), (34, "vtr"), (64, "vtr"), (74, "vts")]
+)
 @pytest.mark.parametrize("compress", [True, False])
 def test_to_vtk_file_matches_to_pyvista(parsed, tmp_path, tally_id, suffix, compress):
     t = _tally(parsed, tally_id)
@@ -146,9 +158,7 @@ def test_default_attaches_every_energy_group_including_total(parsed):
     expected_names = {f"result_e{i}" for i in range(10)} | {"result_etotal"}
     expected_names |= {f"rel_error_e{i}" for i in range(10)} | {"rel_error_etotal"}
     assert set(grid.array_names) == expected_names
-    assert np.allclose(
-        grid.cell_data["result_e3"], t.result[3, 0].flatten(order="F")
-    )
+    assert np.allclose(grid.cell_data["result_e3"], t.result[3, 0].flatten(order="F"))
     assert np.allclose(
         grid.cell_data["result_etotal"],
         t.result[t.energy.total_index, 0].flatten(order="F"),

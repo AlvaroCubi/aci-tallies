@@ -86,9 +86,7 @@ def test_integrate_time_prefers_native_total_over_quadrature(parsed):
     integrated = t.integrate_time()
     assert integrated.result.shape[1] == 1
     assert not integrated.time.total
-    assert np.allclose(
-        integrated.result[:, 0], t.result[:, t.time.total_index]
-    )
+    assert np.allclose(integrated.result[:, 0], t.result[:, t.time.total_index])
 
 
 def test_integrate_space_matches_manual_volume_weighting(parsed):
@@ -114,7 +112,12 @@ def test_integrate_space_uses_explicit_volume_when_present(parsed):
 def test_isel_slices_result_and_bounds(parsed):
     t = _tally(parsed, 14)
     sliced = t.isel(i=slice(0, 2))
-    assert sliced.result.shape == (t.result.shape[0], t.result.shape[1], 2, *t.result.shape[3:])
+    assert sliced.result.shape == (
+        t.result.shape[0],
+        t.result.shape[1],
+        2,
+        *t.result.shape[3:],
+    )
     assert np.allclose(sliced.result, t.result[:, :, 0:2, :, :])
     assert np.allclose(sliced.geometry.bounds[0], t.geometry.bounds[0][0:3])
 
@@ -131,7 +134,9 @@ def test_isel_slices_time_axis(parsed):
 def test_isel_omitting_axis_keeps_total_slice(parsed):
     t = _tally(parsed, 34)
     assert t.energy.total
-    kept_whole = t.isel(i=slice(0, 2))  # energy omitted entirely: kept whole, Total included
+    kept_whole = t.isel(
+        i=slice(0, 2)
+    )  # energy omitted entirely: kept whole, Total included
     assert kept_whole.energy.total
     assert kept_whole.result.shape[0] == t.result.shape[0]
 

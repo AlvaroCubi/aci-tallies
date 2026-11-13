@@ -102,7 +102,11 @@ def cuv_dataset(pairs: CuvPairs) -> Any:
         value = getattr(pairs, name)
         if value is not None:
             data[name] = (("pair",), value)
-    if pairs.flux is not None and pairs.energy is not None and pairs.energy.bounds is not None:
+    if (
+        pairs.flux is not None
+        and pairs.energy is not None
+        and pairs.energy.bounds is not None
+    ):
         bounds = pairs.energy.bounds
         coords["energy_low"] = ("energy", bounds[:-1])
         coords["energy_high"] = ("energy", bounds[1:])
